@@ -2,14 +2,12 @@
 
 #include <string>
 
-struct Credentials
-{
+struct Credentials {
     std::string login;
     std::string password;
 };
 
-struct Device
-{
+struct Device {
     std::string name;
 
     std::string type;

@@ -2,9 +2,8 @@
 
 #include <string>
 
-class Ping
-{
-public:
+class Ping {
+   public:
     // Возвращает true, если хост отвечает
     bool Check(const std::string& ip);
 

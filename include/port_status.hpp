@@ -1,7 +1,6 @@
 #pragma once
 
-struct PortStatus
-{
+struct PortStatus {
     int port = 0;
     bool open = false;
 };

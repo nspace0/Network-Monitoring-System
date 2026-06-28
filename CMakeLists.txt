@@ -18,6 +18,7 @@ add_executable(network_scanner
     src/scanner.cpp
     src/logger.cpp
     src/console_report.cpp
+    src/services.cpp
 )
 
 target_link_libraries(network_scanner

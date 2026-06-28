@@ -1,52 +1,55 @@
 #include "../include/console_report.hpp"
 
-#include "../include/colors.hpp"
-
+#include <iomanip>
 #include <iostream>
+
+#include "../include/colors.hpp"
+#include "../include/services.hpp"
 
 void PrintResult(const ScanResult& result)
 {
     std::cout << "========================================\n";
 
-    std::cout << "Устройство : "
-              << result.device.name
-              << '\n';
-
-    std::cout << "IP         : "
-              << result.device.ip
-              << '\n';
+    std::cout << "Устройство : " << result.device.name << '\n';
+    std::cout << "IP         : " << result.device.ip << '\n';
 
     std::cout << "PING       : ";
-    std::cout << "Latency   : ";
-
-if (result.latency >= 0)
-{
-    std::cout << Color::Green
-              << result.latency
-              << " ms";
-}
-else
-{
-    std::cout << Color::Red
-              << "N/A";
-}
-
-std::cout << Color::Reset << '\n';
 
     if (result.ping)
     {
         std::cout << Color::Green
                   << "OK"
-                  << Color::Reset
-                  << '\n';
+                  << Color::Reset;
     }
     else
     {
         std::cout << Color::Red
                   << "FAIL"
-                  << Color::Reset
-                  << '\n';
+                  << Color::Reset;
+    }
 
+    std::cout << '\n';
+
+    std::cout << "Latency    : ";
+
+    if (result.latency >= 0)
+    {
+        std::cout << Color::Green
+                  << result.latency
+                  << " ms"
+                  << Color::Reset;
+    }
+    else
+    {
+        std::cout << Color::Yellow
+                  << "N/A"
+                  << Color::Reset;
+    }
+
+    std::cout << '\n';
+
+    if (!result.ping)
+    {
         std::cout << "========================================\n\n";
         return;
     }
@@ -55,23 +58,20 @@ std::cout << Color::Reset << '\n';
 
     for (const auto& port : result.ports)
     {
-        std::cout << "PORT "
-                  << port.port
-                  << " : ";
+        std::cout << std::left
+                  << std::setw(8) << port.port
+                  << std::setw(15) << GetServiceName(port.port);
 
         if (port.open)
         {
-            std::cout << Color::Green
-                      << "OPEN";
+            std::cout << Color::Green << "OPEN";
         }
         else
         {
-            std::cout << Color::Red
-                      << "CLOSED";
+            std::cout << Color::Red << "CLOSED";
         }
 
-        std::cout << Color::Reset
-                  << '\n';
+        std::cout << Color::Reset << '\n';
     }
 
     std::cout << "========================================\n\n";

@@ -4,13 +4,12 @@
 
 #include "device.hpp"
 
-class JsonParser
-{
-public:
+class JsonParser {
+   public:
     std::vector<Device> ParseDevices();
 
     std::vector<int> ParsePorts();
 
-private:
+   private:
     void CheckFile();
 };

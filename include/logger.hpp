@@ -1,5 +1,4 @@
-struct ScanResult
-{
+struct ScanResult {
     bool ping = false;
 
     bool ssh = false;

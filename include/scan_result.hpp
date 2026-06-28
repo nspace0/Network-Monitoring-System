@@ -5,8 +5,7 @@
 #include "device.hpp"
 #include "port_status.hpp"
 
-struct ScanResult
-{
+struct ScanResult {
     Device device;
 
     bool ping = false;

@@ -2,16 +2,14 @@
 
 #include <filesystem>
 #include <fstream>
-#include <stdexcept>
-
 #include <nlohmann/json.hpp>
+#include <stdexcept>
 
 using json = nlohmann::json;
 
 namespace fs = std::filesystem;
 
-static fs::path GetConfigPath()
-{
+static fs::path GetConfigPath() {
     fs::path current = fs::current_path();
 
     if (fs::exists(current / "config" / "devices.json"))
@@ -23,17 +21,13 @@ static fs::path GetConfigPath()
     throw std::runtime_error("config/devices.json not found.");
 }
 
-void JsonParser::CheckFile()
-{
-    if (!fs::exists(GetConfigPath()))
-    {
-        throw std::runtime_error(
-            "config/devices.json not found.");
+void JsonParser::CheckFile() {
+    if (!fs::exists(GetConfigPath())) {
+        throw std::runtime_error("config/devices.json not found.");
     }
 }
 
-std::vector<Device> JsonParser::ParseDevices()
-{
+std::vector<Device> JsonParser::ParseDevices() {
     CheckFile();
 
     std::ifstream file(GetConfigPath());
@@ -44,8 +38,7 @@ std::vector<Device> JsonParser::ParseDevices()
 
     std::vector<Device> devices;
 
-    for (const auto& item : j.at("devices"))
-    {
+    for (const auto& item : j.at("devices")) {
         Device device;
 
         device.name = item.at("name");
@@ -56,11 +49,9 @@ std::vector<Device> JsonParser::ParseDevices()
         device.mac = item.at("mac");
         device.vlan = item.at("vlan");
 
-        device.credentials.login =
-            item.at("credentials").at("login");
+        device.credentials.login = item.at("credentials").at("login");
 
-        device.credentials.password =
-            item.at("credentials").at("password");
+        device.credentials.password = item.at("credentials").at("password");
 
         devices.push_back(device);
     }
@@ -68,8 +59,7 @@ std::vector<Device> JsonParser::ParseDevices()
     return devices;
 }
 
-std::vector<int> JsonParser::ParsePorts()
-{
+std::vector<int> JsonParser::ParsePorts() {
     CheckFile();
 
     std::ifstream file(GetConfigPath());

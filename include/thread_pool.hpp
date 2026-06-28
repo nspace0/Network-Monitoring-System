@@ -7,9 +7,8 @@
 #include <thread>
 #include <vector>
 
-class ThreadPool
-{
-public:
+class ThreadPool {
+   public:
     explicit ThreadPool(std::size_t threads);
 
     ~ThreadPool();
@@ -18,7 +17,7 @@ public:
 
     void Wait();
 
-private:
+   private:
     std::vector<std::thread> workers;
 
     std::queue<std::function<void()>> tasks;
