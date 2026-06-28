@@ -1,36 +1,61 @@
-#include "../include/json_parser.hpp"
-#include "../include/scanner.hpp"
-
 #include <chrono>
 #include <iostream>
 
+#include "../include/console_report.hpp"
+#include "../include/json_parser.hpp"
+#include "../include/scanner.hpp"
+
 int main()
 {
-    auto start = std::chrono::steady_clock::now();
+    auto start =
+        std::chrono::steady_clock::now();
 
     try
     {
         JsonParser parser;
 
-        auto devices = parser.Parse();
+        auto devices =
+            parser.ParseDevices();
+
+        auto ports =
+            parser.ParsePorts();
 
         Scanner scanner;
 
-        scanner.Scan(devices);
+        auto results =
+            scanner.Scan(devices,
+                         ports);
+
+        for (const auto& result : results)
+            PrintResult(result);
     }
     catch (const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr
+            << e.what()
+            << '\n';
+
         return EXIT_FAILURE;
     }
 
-    auto end = std::chrono::steady_clock::now();
+    auto end =
+        std::chrono::steady_clock::now();
 
-    auto sec =
-        std::chrono::duration_cast<std::chrono::seconds>(end - start);
+    auto seconds =
+        std::chrono::duration_cast<
+            std::chrono::seconds>(
+            end - start);
 
     std::cout
-        << "\nFinished in "
-        << sec.count()
-        << " sec\n";
+        << "\n====================================\n";
+
+    std::cout
+        << "Время выполнения: "
+        << seconds.count()
+        << " сек\n";
+
+    std::cout
+        << "====================================\n";
+
+    return EXIT_SUCCESS;
 }

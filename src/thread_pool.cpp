@@ -1,4 +1,5 @@
 #include "../include/thread_pool.hpp"
+#include <stdexcept>
 
 ThreadPool::ThreadPool(std::size_t threads)
 {
@@ -59,6 +60,10 @@ void ThreadPool::Enqueue(std::function<void()> task)
 {
     {
         std::lock_guard lock(mutex);
+
+        if (stop)
+            throw std::runtime_error("ThreadPool stopped");
+
         tasks.push(std::move(task));
     }
 

@@ -1,73 +1,76 @@
 #include "../include/scanner.hpp"
 
-#include "../include/colors.hpp"
+#include "../include/ping.hpp"
 #include "../include/port_scanner.hpp"
 #include "../include/thread_pool.hpp"
 
-#include <iostream>
 #include <mutex>
+#include <thread>
 
-void Scanner::Scan(const std::vector<Device>& devices)
+std::vector<ScanResult> Scanner::Scan(
+    const std::vector<Device>& devices,
+    const std::vector<int>& ports)
 {
-    unsigned threads = std::thread::hardware_concurrency();
+    std::vector<ScanResult> results;
 
-    if (threads == 0)
-        threads = 4;
+    std::mutex mutex;
 
-    threads *= 2;
-
-    ThreadPool pool(threads);
-
-    PortScanner scanner;
-
-    std::mutex console;
+    ThreadPool pool(std::thread::hardware_concurrency());
 
     for (const auto& device : devices)
     {
         pool.Enqueue([&, device]()
         {
-            bool ssh = scanner.IsOpen(device.ip, 22);
-            bool telnet = scanner.IsOpen(device.ip, 23);
-            bool http = scanner.IsOpen(device.ip, 80);
-            bool https = scanner.IsOpen(device.ip, 443);
-            bool snmp = scanner.IsOpen(device.ip, 161);
+            ScanResult result =
+                ScanDevice(device, ports);
 
-            std::lock_guard lock(console);
+            std::lock_guard lock(mutex);
 
-            std::cout
-                << Color::Yellow
-                << "========================================\n"
-                << Color::Reset;
-
-            std::cout
-                << Color::Bold
-                << device.name
-                << Color::Reset
-                << '\n';
-
-            std::cout << "IP : " << device.ip << '\n';
-
-            auto Print = [](const char* name, bool ok)
-            {
-                std::cout << name << " : ";
-
-                if (ok)
-                    std::cout << Color::Green << "OK";
-                else
-                    std::cout << Color::Red << "CLOSED";
-
-                std::cout << Color::Reset << '\n';
-            };
-
-            Print("SSH   ", ssh);
-            Print("Telnet", telnet);
-            Print("HTTP  ", http);
-            Print("HTTPS ", https);
-            Print("SNMP  ", snmp);
-
-            std::cout << '\n';
+            results.push_back(std::move(result));
         });
     }
 
     pool.Wait();
+
+    return results;
+}
+
+ScanResult Scanner::ScanDevice(
+    const Device& device,
+    const std::vector<int>& ports)
+{
+    ScanResult result;
+
+    result.device = device;
+
+    Ping ping;
+
+    result.ping = ping.Check(device.ip);
+
+if (result.ping)
+{
+    result.latency = static_cast<int>(ping.Latency(device.ip));
+}
+else
+{
+    result.latency = -1;
+    return result;
+}
+
+    PortScanner scanner;
+
+    for (int port : ports)
+    {
+        PortStatus status;
+
+        status.port = port;
+
+        status.open =
+            scanner.IsOpen(device.ip,
+                           port);
+
+        result.ports.push_back(status);
+    }
+
+    return result;
 }

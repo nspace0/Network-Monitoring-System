@@ -7,7 +7,9 @@
 class JsonParser
 {
 public:
-    std::vector<Device> Parse();
+    std::vector<Device> ParseDevices();
+
+    std::vector<int> ParsePorts();
 
 private:
     void CheckFile();
