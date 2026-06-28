@@ -20,6 +20,7 @@ add_executable(network_scanner
     src/console_report.cpp
     src/services.cpp
     src/banner_grabber.cpp
+    src/report_generator.cpp
 )
 
 target_link_libraries(network_scanner
