@@ -16,12 +16,12 @@ add_executable(network_scanner
     src/ping.cpp
     src/thread_pool.cpp
     src/scanner.cpp
-    src/logger.cpp
     src/console_report.cpp
     src/services.cpp
     src/banner_grabber.cpp
     src/report_generator.cpp
     src/application.cpp
+    src/config.cpp
 )
 
 target_link_libraries(network_scanner

@@ -3,12 +3,15 @@
 #include <chrono>
 #include <iostream>
 
+#include "../include/config.hpp"
 #include "../include/console_report.hpp"
 #include "../include/json_parser.hpp"
 #include "../include/report_generator.hpp"
 #include "../include/scanner.hpp"
 
 int Application::Run() {
+    // Config config = Config::Load("config/devices.json");
+
     auto start = std::chrono::steady_clock::now();
 
     try {
@@ -17,7 +20,8 @@ int Application::Run() {
         auto devices = parser.ParseDevices();
         auto ports = parser.ParsePorts();
 
-        Scanner scanner;
+        Config config;
+        Scanner scanner(config);
 
         auto results = scanner.Scan(devices, ports);
 
@@ -27,9 +31,11 @@ int Application::Run() {
 
         ReportGenerator report;
 
-        report.SaveTxt(results);
-        report.SaveCsv(results);
-        report.SaveHtml(results);
+        if (config.generate_txt) report.SaveTxt(results);
+
+        if (config.generate_csv) report.SaveCsv(results);
+
+        if (config.generate_html) report.SaveHtml(results);
     } catch (const std::exception& e) {
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;

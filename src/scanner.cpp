@@ -10,13 +10,15 @@
 #include "../include/services.hpp"
 #include "../include/thread_pool.hpp"
 
+Scanner::Scanner(const Config& config) : config_(config) {}
+
 std::vector<ScanResult> Scanner::Scan(const std::vector<Device>& devices,
                                       const std::vector<int>& ports) {
     std::vector<ScanResult> results;
 
     std::mutex mutex;
 
-    ThreadPool pool(std::thread::hardware_concurrency());
+    ThreadPool pool(config_.thread_count);
 
     for (const auto& device : devices) {
         pool.Enqueue([&, device]() {
@@ -54,7 +56,7 @@ ScanResult Scanner::ScanDevice(const Device& device,
 
     std::mutex ports_mutex;
 
-    ThreadPool pool(std::thread::hardware_concurrency());
+    ThreadPool pool(config_.thread_count);
 
     for (int port : ports) {
         pool.Enqueue([&, port]() {
