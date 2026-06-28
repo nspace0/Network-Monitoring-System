@@ -143,7 +143,7 @@ build/network_scanner
 Конфигурация устройств хранится в:
 
 ```text
-config/network.json
+config/devices.json
 ```
 
 Пример структуры:
@@ -156,9 +156,9 @@ config/network.json
             "type": "Коммутатор",
             "location": "Серверная",
             "model": "SNR-S2990G",
-            "ip": "10.90.90.10",
-            "mac": "F8:F0:82:73:EF:B9",
-            "vlan": 34,
+            "ip": "10.90.90.90",
+            "mac": "00:00:00:00:00:0",
+            "vlan": 404,
 
             "credentials":
             {
