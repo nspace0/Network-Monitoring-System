@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+#fsfs
+build/ 
+
+devices.json
+
+*.log
+reports/

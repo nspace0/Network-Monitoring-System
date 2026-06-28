@@ -1,0 +1,21 @@
+{
+  "settings": {
+    "threads": 8,
+    "timeout_ms": 2000
+  },
+  "devices": [
+    {
+      "name": "NameError",
+      "type": "Коммутатор",
+      "location": "1",
+      "model": "Snr-S2990G-24FX",
+      "mac": "00:00:00:00:00:00",
+      "ip": "10.90.90.90",
+      "vlan": 404,
+      "credentials": {
+        "login": "admin",
+        "password": "admin"
+      }
+    }
+  ]
+}
