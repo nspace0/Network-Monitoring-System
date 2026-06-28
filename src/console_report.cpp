@@ -31,12 +31,6 @@ void PrintResult(const ScanResult& result) {
     }
 
     std::cout << '\n';
-
-    if (!result.ping) {
-        std::cout << "========================================\n\n";
-        return;
-    }
-
     std::cout << '\n';
 
     for (const auto& port : result.ports) {

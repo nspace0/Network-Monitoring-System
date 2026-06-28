@@ -49,8 +49,9 @@ ScanResult Scanner::ScanDevice(const Device& device,
         result.latency = static_cast<int>(ping.Latency(device.ip));
     } else {
         result.latency = -1;
-        return result;
     }
+
+    // Всегда продолжаем сканирование портов
 
     PortScanner scanner;
 
