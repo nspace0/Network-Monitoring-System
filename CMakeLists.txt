@@ -22,6 +22,9 @@ add_executable(network_scanner
     src/report_generator.cpp
     src/application.cpp
     src/config.cpp
+    src/os_detector.cpp
+    src/network_discovery.cpp
+    src/statistics.cpp
 )
 
 target_link_libraries(network_scanner

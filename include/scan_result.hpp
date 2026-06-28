@@ -13,4 +13,5 @@ struct ScanResult {
     int latency = 0;
 
     std::vector<PortStatus> ports;
+    std::string os;
 };

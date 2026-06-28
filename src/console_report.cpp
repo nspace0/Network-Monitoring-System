@@ -11,7 +11,7 @@ void PrintResult(const ScanResult& result) {
 
     std::cout << "Устройство : " << result.device.name << '\n';
     std::cout << "IP         : " << result.device.ip << '\n';
-
+    std::cout << "OS         : " << result.os << '\n';
     std::cout << "PING       : ";
 
     if (result.ping) {

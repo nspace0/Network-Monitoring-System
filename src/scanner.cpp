@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "../include/banner_grabber.hpp"
+#include "../include/os_detector.hpp"
 #include "../include/ping.hpp"
 #include "../include/port_scanner.hpp"
 #include "../include/services.hpp"
@@ -48,8 +49,12 @@ ScanResult Scanner::ScanDevice(const Device& device,
 
     if (result.ping) {
         result.latency = static_cast<int>(ping.Latency(device.ip));
+
+        OSDetector detector;
+        result.os = detector.Detect(device.ip);
     } else {
         result.latency = -1;
+        result.os = "Unknown";
     }
 
     // Всегда продолжаем сканирование портов
@@ -60,40 +65,36 @@ ScanResult Scanner::ScanDevice(const Device& device,
 
     ThreadPool pool(config_.thread_count);
 
-    for (int port : ports)
-{
-    pool.Enqueue([&, port]()
-    {
-        PortStatus status;
+    for (int port : ports) {
+        pool.Enqueue([&, port]() {
+            PortStatus status;
 
-        status.port = port;
+            status.port = port;
 
-        auto start = std::chrono::steady_clock::now();
+            auto start = std::chrono::steady_clock::now();
 
-        status.open = scanner.IsOpen(device.ip, port,
-                                     config_.connect_timeout);
+            status.open =
+                scanner.IsOpen(device.ip, port, config_.connect_timeout);
 
-        auto end = std::chrono::steady_clock::now();
+            auto end = std::chrono::steady_clock::now();
 
-        status.response_time =
-            std::chrono::duration_cast<std::chrono::milliseconds>(
-                end - start).count();
+            status.response_time =
+                std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                      start)
+                    .count();
 
-        status.service = GetServiceName(port);
+            status.service = GetServiceName(port);
 
-        if (status.open)
-        {
-            BannerGrabber grabber;
-            status.banner = grabber.Grab(
-                device.ip,
-                port,
-                config_.banner_timeout);
-        }
+            if (status.open) {
+                BannerGrabber grabber;
+                status.banner =
+                    grabber.Grab(device.ip, port, config_.banner_timeout);
+            }
 
-        std::lock_guard<std::mutex> lock(ports_mutex);
-        result.ports.push_back(std::move(status));
-    });
-}
+            std::lock_guard<std::mutex> lock(ports_mutex);
+            result.ports.push_back(std::move(status));
+        });
+    }
 
     pool.Wait();
 
