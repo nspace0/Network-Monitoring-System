@@ -4,11 +4,11 @@
 #include <mutex>
 #include <thread>
 
+#include "../include/banner_grabber.hpp"
 #include "../include/ping.hpp"
 #include "../include/port_scanner.hpp"
-#include "../include/thread_pool.hpp"
 #include "../include/services.hpp"
-#include "../include/banner_grabber.hpp"
+#include "../include/thread_pool.hpp"
 
 std::vector<ScanResult> Scanner::Scan(const std::vector<Device>& devices,
                                       const std::vector<int>& ports) {

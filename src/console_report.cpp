@@ -41,7 +41,7 @@ void PrintResult(const ScanResult& result) {
 
     for (const auto& port : result.ports) {
         std::cout << std::left << std::setw(8) << port.port << std::setw(15)
-                  << GetServiceName(port.port);
+                  << port.service;
 
         if (port.open) {
             std::cout << Color::Green << "OPEN";
@@ -50,6 +50,11 @@ void PrintResult(const ScanResult& result) {
         }
 
         std::cout << Color::Reset << '\n';
+
+        if (!port.banner.empty()) {
+            std::cout << "         " << Color::Blue << port.banner
+                      << Color::Reset << '\n';
+        }
     }
 
     std::cout << "========================================\n\n";
