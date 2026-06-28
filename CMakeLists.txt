@@ -13,6 +13,8 @@ add_executable(network_scanner
     src/main.cpp
     src/json_parser.cpp
     src/port_scanner.cpp
+    src/thread_pool.cpp
+    src/scanner.cpp
 )
 
 target_link_libraries(network_scanner

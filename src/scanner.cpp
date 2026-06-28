@@ -1,60 +1,73 @@
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <unistd.h>
+#include "../include/scanner.hpp"
 
+#include "../include/colors.hpp"
 #include "../include/port_scanner.hpp"
+#include "../include/thread_pool.hpp"
 
-bool PortScanner::IsOpen(const std::string& ip, int port, int timeout_ms)
+#include <iostream>
+#include <mutex>
+
+void Scanner::Scan(const std::vector<Device>& devices)
 {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    unsigned threads = std::thread::hardware_concurrency();
 
-    if (sock < 0)
-        return false;
+    if (threads == 0)
+        threads = 4;
 
-    // Делаем сокет неблокирующим
-    fcntl(sock, F_SETFL, O_NONBLOCK);
+    threads *= 2;
 
-    sockaddr_in addr{};
-    addr.sin_family = AF_INET;
-    addr.sin_port   = htons(port);
+    ThreadPool pool(threads);
 
-    inet_pton(AF_INET, ip.c_str(), &addr.sin_addr);
+    PortScanner scanner;
 
-    int result = connect(sock, (sockaddr*)&addr, sizeof(addr));
+    std::mutex console;
 
-    if (result == 0)
+    for (const auto& device : devices)
     {
-        close(sock);
-        return true;
+        pool.Enqueue([&, device]()
+        {
+            bool ssh = scanner.IsOpen(device.ip, 22);
+            bool telnet = scanner.IsOpen(device.ip, 23);
+            bool http = scanner.IsOpen(device.ip, 80);
+            bool https = scanner.IsOpen(device.ip, 443);
+            bool snmp = scanner.IsOpen(device.ip, 161);
+
+            std::lock_guard lock(console);
+
+            std::cout
+                << Color::Yellow
+                << "========================================\n"
+                << Color::Reset;
+
+            std::cout
+                << Color::Bold
+                << device.name
+                << Color::Reset
+                << '\n';
+
+            std::cout << "IP : " << device.ip << '\n';
+
+            auto Print = [](const char* name, bool ok)
+            {
+                std::cout << name << " : ";
+
+                if (ok)
+                    std::cout << Color::Green << "OK";
+                else
+                    std::cout << Color::Red << "CLOSED";
+
+                std::cout << Color::Reset << '\n';
+            };
+
+            Print("SSH   ", ssh);
+            Print("Telnet", telnet);
+            Print("HTTP  ", http);
+            Print("HTTPS ", https);
+            Print("SNMP  ", snmp);
+
+            std::cout << '\n';
+        });
     }
 
-    fd_set fdset;
-
-    FD_ZERO(&fdset);
-    FD_SET(sock, &fdset);
-
-    timeval tv;
-
-    tv.tv_sec  = timeout_ms / 1000;
-    tv.tv_usec = (timeout_ms % 1000) * 1000;
-
-    result = select(sock + 1, nullptr, &fdset, nullptr, &tv);
-
-    if (result == 1)
-    {
-        int       so_error;
-        socklen_t len = sizeof(so_error);
-
-        getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
-
-        close(sock);
-
-        return so_error == 0;
-    }
-
-    close(sock);
-
-    return false;
+    pool.Wait();
 }
