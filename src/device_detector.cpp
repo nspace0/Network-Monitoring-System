@@ -1,19 +1,15 @@
 #include "../include/device_detector.hpp"
 
-std::string DeviceDetector::Detect(const ScanResult& result) const
-{
+std::string DeviceDetector::Detect(const ScanResult& result) const {
     bool ssh = false;
     bool http = false;
     bool snmp = false;
     bool rdp = false;
 
-    for (const auto& port : result.ports)
-    {
-        if (!port.open)
-            continue;
+    for (const auto& port : result.ports) {
+        if (!port.open) continue;
 
-        switch (port.port)
-        {
+        switch (port.port) {
             case 22:
                 ssh = true;
                 break;
@@ -34,17 +30,13 @@ std::string DeviceDetector::Detect(const ScanResult& result) const
         }
     }
 
-    if (snmp && ssh)
-        return "Switch / Router";
+    if (snmp && ssh) return "Switch / Router";
 
-    if (rdp)
-        return "Windows Server";
+    if (rdp) return "Windows Server";
 
-    if (http && !ssh)
-        return "Web Device";
+    if (http && !ssh) return "Web Device";
 
-    if (ssh)
-        return "Linux Device";
+    if (ssh) return "Linux Device";
 
     return "Unknown";
 }

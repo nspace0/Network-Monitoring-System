@@ -43,7 +43,13 @@ void PrintResult(const ScanResult& result) {
             std::cout << Color::Red << "CLOSED";
         }
 
-        std::cout << Color::Reset << '\n';
+        std::cout << Color::Reset;
+
+        if (port.response_time >= 0) {
+            std::cout << "  (" << port.response_time << " ms)";
+        }
+
+        std::cout << '\n';
 
         if (!port.banner.empty()) {
             std::cout << "         " << Color::Blue << port.banner

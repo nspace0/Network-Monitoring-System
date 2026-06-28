@@ -1,6 +1,7 @@
 #include "../include/scanner.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <mutex>
 #include <thread>
 
@@ -59,25 +60,40 @@ ScanResult Scanner::ScanDevice(const Device& device,
 
     ThreadPool pool(config_.thread_count);
 
-    for (int port : ports) {
-        pool.Enqueue([&, port]() {
-            PortStatus status;
+    for (int port : ports)
+{
+    pool.Enqueue([&, port]()
+    {
+        PortStatus status;
 
-            status.port = port;
-            status.open = scanner.IsOpen(device.ip, port);
-            status.service = GetServiceName(port);
+        status.port = port;
 
-            if (status.open) {
-                BannerGrabber grabber;
+        auto start = std::chrono::steady_clock::now();
 
-                status.banner = grabber.Grab(device.ip, port);
-            }
+        status.open = scanner.IsOpen(device.ip, port,
+                                     config_.connect_timeout);
 
-            std::lock_guard<std::mutex> lock(ports_mutex);
+        auto end = std::chrono::steady_clock::now();
 
-            result.ports.push_back(std::move(status));
-        });
-    }
+        status.response_time =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                end - start).count();
+
+        status.service = GetServiceName(port);
+
+        if (status.open)
+        {
+            BannerGrabber grabber;
+            status.banner = grabber.Grab(
+                device.ip,
+                port,
+                config_.banner_timeout);
+        }
+
+        std::lock_guard<std::mutex> lock(ports_mutex);
+        result.ports.push_back(std::move(status));
+    });
+}
 
     pool.Wait();
 

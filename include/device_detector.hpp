@@ -4,8 +4,7 @@
 
 #include "scan_result.hpp"
 
-class DeviceDetector
-{
-public:
+class DeviceDetector {
+   public:
     std::string Detect(const ScanResult& result) const;
 };
