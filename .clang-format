@@ -1,0 +1,23 @@
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 100
+
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+BreakBeforeBraces: Allman
+
+PointerAlignment: Left
+
+SortIncludes: true
+
+NamespaceIndentation: All
+
+AccessModifierOffset: -4
+
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+
+SpaceBeforeParens: ControlStatements
+

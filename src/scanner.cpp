@@ -1,14 +1,12 @@
-#include "../include/port_scanner.hpp"
-
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-bool PortScanner::IsOpen(const std::string& ip,
-                         int port,
-                         int timeout_ms)
+#include "../include/port_scanner.hpp"
+
+bool PortScanner::IsOpen(const std::string& ip, int port, int timeout_ms)
 {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -20,13 +18,11 @@ bool PortScanner::IsOpen(const std::string& ip,
 
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
+    addr.sin_port   = htons(port);
 
     inet_pton(AF_INET, ip.c_str(), &addr.sin_addr);
 
-    int result = connect(sock,
-                         (sockaddr*)&addr,
-                         sizeof(addr));
+    int result = connect(sock, (sockaddr*)&addr, sizeof(addr));
 
     if (result == 0)
     {
@@ -41,25 +37,17 @@ bool PortScanner::IsOpen(const std::string& ip,
 
     timeval tv;
 
-    tv.tv_sec = timeout_ms / 1000;
+    tv.tv_sec  = timeout_ms / 1000;
     tv.tv_usec = (timeout_ms % 1000) * 1000;
 
-    result = select(sock + 1,
-                    nullptr,
-                    &fdset,
-                    nullptr,
-                    &tv);
+    result = select(sock + 1, nullptr, &fdset, nullptr, &tv);
 
     if (result == 1)
     {
-        int so_error;
+        int       so_error;
         socklen_t len = sizeof(so_error);
 
-        getsockopt(sock,
-                   SOL_SOCKET,
-                   SO_ERROR,
-                   &so_error,
-                   &len);
+        getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
 
         close(sock);
 

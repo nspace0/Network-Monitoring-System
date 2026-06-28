@@ -7,11 +7,8 @@
 class JsonParser
 {
 public:
-
     std::vector<Device> Parse();
 
 private:
-
     void CheckFile();
-
 };
