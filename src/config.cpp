@@ -16,19 +16,27 @@ Config Config::Load(const std::string& file) {
     json j;
     input >> j;
 
+    const auto& settings = j.at("settings");
+
     Config cfg;
 
-    cfg.thread_count = j.value("thread_count", 8);
-    cfg.ping_timeout = j.value("ping_timeout", 1000);
-    cfg.connect_timeout = j.value("connect_timeout", 1000);
-    cfg.banner_timeout = j.value("banner_timeout", 2000);
+    cfg.thread_count = settings.value("thread_count", 8);
 
-    cfg.enable_ping = j.value("enable_ping", true);
-    cfg.enable_banner = j.value("enable_banner", true);
+    cfg.ping_timeout = settings.value("ping_timeout", 1000);
 
-    cfg.generate_html = j.value("generate_html", true);
-    cfg.generate_csv = j.value("generate_csv", true);
-    cfg.generate_txt = j.value("generate_txt", true);
+    cfg.connect_timeout = settings.value("connect_timeout", 1000);
+
+    cfg.banner_timeout = settings.value("banner_timeout", 2000);
+
+    cfg.enable_ping = settings.value("enable_ping", true);
+
+    cfg.enable_banner = settings.value("enable_banner", true);
+
+    cfg.generate_html = settings.value("generate_html", true);
+
+    cfg.generate_csv = settings.value("generate_csv", true);
+
+    cfg.generate_txt = settings.value("generate_txt", true);
 
     return cfg;
 }

@@ -10,7 +10,7 @@
 #include "../include/scanner.hpp"
 
 int Application::Run() {
-    // Config config = Config::Load("config/devices.json");
+    Config config = Config::Load("../config/devices.json");
 
     auto start = std::chrono::steady_clock::now();
 
