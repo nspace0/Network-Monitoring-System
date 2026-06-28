@@ -7,6 +7,8 @@
 #include "../include/ping.hpp"
 #include "../include/port_scanner.hpp"
 #include "../include/thread_pool.hpp"
+#include "../include/services.hpp"
+#include "../include/banner_grabber.hpp"
 
 std::vector<ScanResult> Scanner::Scan(const std::vector<Device>& devices,
                                       const std::vector<int>& ports) {
@@ -60,6 +62,13 @@ ScanResult Scanner::ScanDevice(const Device& device,
 
             status.port = port;
             status.open = scanner.IsOpen(device.ip, port);
+            status.service = GetServiceName(port);
+
+            if (status.open) {
+                BannerGrabber grabber;
+
+                status.banner = grabber.Grab(device.ip, port);
+            }
 
             std::lock_guard<std::mutex> lock(ports_mutex);
 

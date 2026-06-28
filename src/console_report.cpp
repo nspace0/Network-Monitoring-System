@@ -6,8 +6,7 @@
 #include "../include/colors.hpp"
 #include "../include/services.hpp"
 
-void PrintResult(const ScanResult& result)
-{
+void PrintResult(const ScanResult& result) {
     std::cout << "========================================\n";
 
     std::cout << "Устройство : " << result.device.name << '\n';
@@ -15,59 +14,38 @@ void PrintResult(const ScanResult& result)
 
     std::cout << "PING       : ";
 
-    if (result.ping)
-    {
-        std::cout << Color::Green
-                  << "OK"
-                  << Color::Reset;
-    }
-    else
-    {
-        std::cout << Color::Red
-                  << "FAIL"
-                  << Color::Reset;
+    if (result.ping) {
+        std::cout << Color::Green << "OK" << Color::Reset;
+    } else {
+        std::cout << Color::Red << "FAIL" << Color::Reset;
     }
 
     std::cout << '\n';
 
     std::cout << "Latency    : ";
 
-    if (result.latency >= 0)
-    {
-        std::cout << Color::Green
-                  << result.latency
-                  << " ms"
-                  << Color::Reset;
-    }
-    else
-    {
-        std::cout << Color::Yellow
-                  << "N/A"
-                  << Color::Reset;
+    if (result.latency >= 0) {
+        std::cout << Color::Green << result.latency << " ms" << Color::Reset;
+    } else {
+        std::cout << Color::Yellow << "N/A" << Color::Reset;
     }
 
     std::cout << '\n';
 
-    if (!result.ping)
-    {
+    if (!result.ping) {
         std::cout << "========================================\n\n";
         return;
     }
 
     std::cout << '\n';
 
-    for (const auto& port : result.ports)
-    {
-        std::cout << std::left
-                  << std::setw(8) << port.port
-                  << std::setw(15) << GetServiceName(port.port);
+    for (const auto& port : result.ports) {
+        std::cout << std::left << std::setw(8) << port.port << std::setw(15)
+                  << GetServiceName(port.port);
 
-        if (port.open)
-        {
+        if (port.open) {
             std::cout << Color::Green << "OPEN";
-        }
-        else
-        {
+        } else {
             std::cout << Color::Red << "CLOSED";
         }
 

@@ -1,6 +1,8 @@
-#pragma once
-
 struct PortStatus {
-    int port = 0;
-    bool open = false;
+    int port;
+    bool open;
+
+    std::string service;
+
+    std::string banner;
 };
